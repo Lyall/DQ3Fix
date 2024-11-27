@@ -318,7 +318,7 @@ void HUD()
                     [](SafetyHookContext& ctx) {
                         if (ctx.xmm0.f32[0] == 0.00f && ctx.xmm0.f32[1] == 0.00f && ctx.xmm0.f32[2] == 1.00f && ctx.xmm0.f32[3] == 1.00f) {
                             SDK::UObject* obj = (SDK::UObject*)ctx.rcx;      
-                            if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WBP_Common_Fading_C")) {
+                            if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WB_Title2_Root_C") || obj->GetName().contains("WBP_Common_Fading_C")) {
                                 return;
                             }
 

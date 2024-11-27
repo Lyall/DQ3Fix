@@ -2,6 +2,8 @@
 #include "helper.hpp"
 
 #include "SDK/Engine_classes.hpp"
+#include "SDK/UMG_classes.hpp"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <inipp/inipp.h>
@@ -207,7 +209,6 @@ void SkipLogos()
         std::uint8_t* IntroLogosScanResult = Memory::PatternScan(exeModule, "8B ?? ?? 0F 28 ?? 83 ?? 01 0F 84 ?? ?? ?? ?? 83 ?? 01");
         if (IntroLogosScanResult) {
             spdlog::info("Intro Logos: Address is {:s}+{:x}", sExeName.c_str(), IntroLogosScanResult - (std::uint8_t*)exeModule);
-
             static SafetyHookMid IntroLogosMidHook{};
             IntroLogosMidHook = safetyhook::create_mid(IntroLogosScanResult + 0x3,
                 [](SafetyHookContext& ctx) {
@@ -234,15 +235,16 @@ void UpdateOffsets()
         spdlog::error("Offsets: GObjects: Pattern scan failed.");
     }
 
-    // AppendString
-    std::uint8_t* AppendStringScanResult = Memory::PatternScan(exeModule, "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 ?? ?? 8B ?? 48 8B ?? 8B ?? 44 0F ?? ?? C1 ?? 10 48 8B ?? 80 3D ?? ?? ?? ?? 00 89 ?? ?? ?? 44 89 ?? ?? ?? 74 ?? 4C 8D ?? ?? ?? ?? ?? EB ?? 48 8D ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C ?? ?? C6 ?? ?? ?? ?? ?? 01 48 8B ?? ?? ?? 48 8B ?? 48 ?? ?? ?? 8D ?? ?? 49 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 ?? ?? 00");
-    if (AppendStringScanResult) {
-        spdlog::info("Offsets: AppendString: Address is {:s}+{:x}", sExeName.c_str(), AppendStringScanResult - (std::uint8_t*)exeModule);
-        SDK::Offsets::AppendString = AppendStringScanResult - (std::uint8_t*)exeModule;
-        spdlog::info("Offsets: AppendString: Offset: {:x}", (uintptr_t)SDK::Offsets::AppendString);
+    // GNames
+    std::uint8_t* GNamesScanResult = Memory::PatternScan(exeModule, "74 ?? 48 8D ?? ?? ?? ?? ?? EB ?? 48 8D ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? ");
+    if (GNamesScanResult) {
+        spdlog::info("Offsets: GNames: Address is {:s}+{:x}", sExeName.c_str(), GNamesScanResult - (std::uint8_t*)exeModule);
+        std::uint8_t* GNamesAddr = Memory::GetAbsolute(GNamesScanResult + 0x5);
+        SDK::Offsets::GNames = GNamesAddr - (std::uint8_t*)exeModule;
+        spdlog::info("Offsets: GNames: Offset: {:x}", (uintptr_t)SDK::Offsets::GNames);
     }
     else {
-        spdlog::error("Offsets: AppendString: Pattern scan failed.");
+        spdlog::error("Offsets: GNames: Pattern scan failed.");
     }
 
     // ProcessEvent
@@ -290,15 +292,20 @@ void HUD()
         // HUD
         std::uint8_t* HUDSizeScanResult = Memory::PatternScan(exeModule, "45 33 ?? 48 8D ?? ?? ?? ?? ?? 89 ?? ?? 48 89 ?? ?? 33 ?? 48 8D ?? ?? ?? ?? ??");
         if (HUDSizeScanResult) {
-            spdlog::info("HUD Size: Address is {:s}+{:x}", sExeName.c_str(), HUDSizeScanResult - (std::uint8_t*)exeModule);
+            spdlog::info("HUD: Size: Address is {:s}+{:x}", sExeName.c_str(), HUDSizeScanResult - (std::uint8_t*)exeModule);
             std::uint8_t* HUDSizeFunction = Memory::GetAbsolute(HUDSizeScanResult + 0x6);
-            spdlog::info("HUD Size: Function address is {:s}+{:x}", sExeName.c_str(), HUDSizeFunction - (std::uint8_t*)exeModule);
+            spdlog::info("HUD: Size: Function address is {:s}+{:x}", sExeName.c_str(), HUDSizeFunction - (std::uint8_t*)exeModule);
 
             if (HUDSizeFunction) {
                 static SafetyHookMid HUDSizeMidHook{};
                 HUDSizeMidHook = safetyhook::create_mid(HUDSizeFunction + 0x7,
                     [](SafetyHookContext& ctx) {
                         if (ctx.xmm0.f32[0] == 0.00f && ctx.xmm0.f32[1] == 0.00f && ctx.xmm0.f32[2] == 1.00f && ctx.xmm0.f32[3] == 1.00f) {
+                            SDK::UObject* obj = (SDK::UObject*)ctx.rcx;      
+                            if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WBP_Common_Fading_C")) {
+                                return;
+                            }
+
                             if (fAspectRatio > fNativeAspect) {
                                 ctx.xmm0.f32[0] = fHUDWidthOffset / (float)iCurrentResX;
                                 ctx.xmm0.f32[2] = 1.00f - ctx.xmm0.f32[0];
@@ -308,22 +315,40 @@ void HUD()
                                 ctx.xmm0.f32[3] = 1.00f - ctx.xmm0.f32[1];
                             }
                         }
-
-                        SDK::UObject* obj = (SDK::UObject*)ctx.rcx;
-                        if (obj->GetName().contains("WBP_Common_Fading")) {
-                            
-                        }
-
-                        // Don't center these UI objects             
-                        if (obj->GetName().contains("WB_TitleDemo_Root")) {
-                            ctx.xmm0.f32[0] = ctx.xmm0.f32[1] = 0.00f;
-                            ctx.xmm0.f32[2] = ctx.xmm0.f32[3] = 1.00f;
-                        }
                     });
             }
         }
         else {
-            spdlog::error("HUD Size: Pattern scan failed.");
+            spdlog::error("HUD: Size: Pattern scan failed.");
+        }
+
+        // Fades
+        std::uint8_t* FadeStartScanResult = Memory::PatternScan(exeModule, "48 8D ?? ?? ?? 0F 29 ?? ?? ?? E8 ?? ?? ?? ?? 0F 57 ?? F3 0F ?? ?? ?? ?? ?? ?? 0F 2E ?? ?? ?? ?? ??");
+        if (FadeStartScanResult) {
+            spdlog::info("HUD: Fades: Address is {:s}+{:x}", sExeName.c_str(), FadeStartScanResult - (std::uint8_t*)exeModule);
+            static SafetyHookMid FadeStartMidHook{};
+            FadeStartMidHook = safetyhook::create_mid(FadeStartScanResult,
+                [](SafetyHookContext& ctx) {
+                    if (ctx.rbx + 0x358) {
+                        SDK::UImage* bgImage = (SDK::UImage*)ctx.rcx;
+                        SDK::UCanvasPanelSlot* bgSlot = (SDK::UCanvasPanelSlot*)bgImage->Slot;
+
+                        SDK::UImage* colorImage = *reinterpret_cast<SDK::UImage**>(ctx.rbx + 0x358);
+                        SDK::UCanvasPanelSlot* colorSlot = (SDK::UCanvasPanelSlot*)colorImage->Slot;
+
+                        if (fAspectRatio > fNativeAspect) {
+                            bgSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1080.00f * fAspectRatio, 1080.00f));
+                            colorSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1080.00f * fAspectRatio, 1080.00f));
+                        }
+                        else if (fAspectRatio < fNativeAspect) {
+                            bgSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1920.00f, 1920.00f / fAspectRatio));
+                            colorSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1920.00f, 1920.00f / fAspectRatio));
+                        }
+                    }  
+                });
+        }
+        else {
+            spdlog::error("HUD: Fades: Pattern scan failed.");
         }
     }
 }

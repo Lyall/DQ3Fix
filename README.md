@@ -9,6 +9,7 @@ This is a work-in-progress ASI plugin for Dragon Quest III HD-2D Remake that add
 - Skip intro logos.
 - Disable 60FPS cap.
 - Enable developer console.
+- Apply a list of console commands on level load.
 
 ### Ultrawide/narrower
 - Support for any aspect ratio.

@@ -2,7 +2,7 @@
 [![Patreon-Button](https://raw.githubusercontent.com/Lyall/DQ3Fix/refs/heads/master/.github/Patreon-Button.png)](https://www.patreon.com/Wintermance) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W01UAI9)<br />
 [![Github All Releases](https://img.shields.io/github/downloads/Lyall/DQ3Fix/total.svg)](https://github.com/Lyall/DQ3Fix/releases)
 
-This is a work-in-progress ASI plugin for Dragon Quest III HD-2D Remake that adds ultrawide/narrower support, uncaps framerate and more.
+This is an ASI plugin for Dragon Quest III HD-2D Remake that adds ultrawide/narrower support, uncaps framerate and more.
 
 ## Features
 ### General

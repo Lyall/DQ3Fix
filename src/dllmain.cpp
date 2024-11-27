@@ -425,10 +425,10 @@ void EnableConsole()
         SDK::UInputSettings* InputSettings = SDK::UInputSettings::GetDefaultObj();
         if (InputSettings) {
             if (InputSettings->ConsoleKeys && InputSettings->ConsoleKeys.Num() > 0) {
-                spdlog::info("Enable Console: Console enabled - access it using key: {}.", InputSettings->ConsoleKeys[1].KeyName.ToString().c_str());
+                spdlog::info("Enable Console: Console enabled - access it using key: {}.", InputSettings->ConsoleKeys[0].KeyName.ToString().c_str());
             }
             else {
-                spdlog::error("Enable Console: Console enabled but no console key is bound.\nAdd this to %LOCALAPPDATA%\\Stalker2\\Saved\\Config\\WindowsNoEditor\\Input.ini -\n[/Script/Engine.InputSettings]\nConsoleKeys = Tilde");
+                spdlog::error("Enable Console: Console enabled but no console key is bound.\nAdd this to %USERPROFILE%\\Documents\\My Games\\DRAGON QUEST III HD-2D Remake\\Steam\\Config\\WindowsNoEditor\\Input.ini -\n[/Script/Engine.InputSettings]\nConsoleKeys = Tilde");
             }
         }
         else {

@@ -10,10 +10,9 @@
 
 #include "Basic.hpp"
 
-#include "Chaos_structs.hpp"
 #include "PhysicsCore_structs.hpp"
-#include "CoreUObject_structs.hpp"
 #include "CoreUObject_classes.hpp"
+#include "Chaos_structs.hpp"
 #include "DeveloperSettings_classes.hpp"
 
 
@@ -83,7 +82,7 @@ static_assert(offsetof(UChaosPhysicalMaterial, SleepingLinearVelocityThreshold) 
 static_assert(offsetof(UChaosPhysicalMaterial, SleepingAngularVelocityThreshold) == 0x000040, "Member 'UChaosPhysicalMaterial::SleepingAngularVelocityThreshold' has a wrong offset!");
 
 // Class PhysicsCore.PhysicalMaterial
-// 0x0068 (0x0090 - 0x0028)
+// 0x0058 (0x0080 - 0x0028)
 class UPhysicalMaterial final : public UObject
 {
 public:
@@ -104,10 +103,8 @@ public:
 	float                                         DestructibleDamageThresholdScale;                  // 0x0050(0x0004)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
 	uint8                                         Pad_54[0x4];                                       // 0x0054(0x0004)(Fixing Size After Last Property [ Dumper-7 ])
 	class UPhysicalMaterialPropertyBase*          PhysicalMaterialProperty;                          // 0x0058(0x0008)(ZeroConstructor, Deprecated, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	EPhysicalSurface                              SurfaceType;                                       // 0x0060(0x0001)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	uint8                                         Pad_61[0x3];                                       // 0x0061(0x0003)(Fixing Size After Last Property [ Dumper-7 ])
-	struct FLinearColor                           DebugSurfaceColor;                                 // 0x0064(0x0010)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	uint8                                         Pad_74[0x1C];                                      // 0x0074(0x001C)(Fixing Struct Size After Last Property [ Dumper-7 ])
+	EPhysicalSurface                              surfaceType;                                       // 0x0060(0x0001)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	uint8                                         Pad_61[0x1F];                                      // 0x0061(0x001F)(Fixing Struct Size After Last Property [ Dumper-7 ])
 
 public:
 	static class UClass* StaticClass()
@@ -120,7 +117,7 @@ public:
 	}
 };
 static_assert(alignof(UPhysicalMaterial) == 0x000008, "Wrong alignment on UPhysicalMaterial");
-static_assert(sizeof(UPhysicalMaterial) == 0x000090, "Wrong size on UPhysicalMaterial");
+static_assert(sizeof(UPhysicalMaterial) == 0x000080, "Wrong size on UPhysicalMaterial");
 static_assert(offsetof(UPhysicalMaterial, Friction) == 0x000028, "Member 'UPhysicalMaterial::Friction' has a wrong offset!");
 static_assert(offsetof(UPhysicalMaterial, StaticFriction) == 0x00002C, "Member 'UPhysicalMaterial::StaticFriction' has a wrong offset!");
 static_assert(offsetof(UPhysicalMaterial, FrictionCombineMode) == 0x000030, "Member 'UPhysicalMaterial::FrictionCombineMode' has a wrong offset!");
@@ -135,8 +132,7 @@ static_assert(offsetof(UPhysicalMaterial, SleepCounterThreshold) == 0x000048, "M
 static_assert(offsetof(UPhysicalMaterial, RaiseMassToPower) == 0x00004C, "Member 'UPhysicalMaterial::RaiseMassToPower' has a wrong offset!");
 static_assert(offsetof(UPhysicalMaterial, DestructibleDamageThresholdScale) == 0x000050, "Member 'UPhysicalMaterial::DestructibleDamageThresholdScale' has a wrong offset!");
 static_assert(offsetof(UPhysicalMaterial, PhysicalMaterialProperty) == 0x000058, "Member 'UPhysicalMaterial::PhysicalMaterialProperty' has a wrong offset!");
-static_assert(offsetof(UPhysicalMaterial, SurfaceType) == 0x000060, "Member 'UPhysicalMaterial::SurfaceType' has a wrong offset!");
-static_assert(offsetof(UPhysicalMaterial, DebugSurfaceColor) == 0x000064, "Member 'UPhysicalMaterial::DebugSurfaceColor' has a wrong offset!");
+static_assert(offsetof(UPhysicalMaterial, surfaceType) == 0x000060, "Member 'UPhysicalMaterial::surfaceType' has a wrong offset!");
 
 // Class PhysicsCore.PhysicalMaterialPropertyBase
 // 0x0000 (0x0028 - 0x0028)

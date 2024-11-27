@@ -147,7 +147,7 @@ public:
 	TFieldPath<struct FProperty>                  Property;                                          // 0x0000(0x0020)(HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 	int32                                         IndirectionStartIndex;                             // 0x0020(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 	int32                                         IndirectionEndIndex;                               // 0x0024(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
-	int32                                         EventId;                                           // 0x0028(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
+	int32                                         EventID;                                           // 0x0028(0x0004)(ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
 	uint8                                         Pad_2C[0x4];                                       // 0x002C(0x0004)(Fixing Struct Size After Last Property [ Dumper-7 ])
 };
 static_assert(alignof(FPropertyAccessIndirectionChain) == 0x000008, "Wrong alignment on FPropertyAccessIndirectionChain");
@@ -155,7 +155,7 @@ static_assert(sizeof(FPropertyAccessIndirectionChain) == 0x000030, "Wrong size o
 static_assert(offsetof(FPropertyAccessIndirectionChain, Property) == 0x000000, "Member 'FPropertyAccessIndirectionChain::Property' has a wrong offset!");
 static_assert(offsetof(FPropertyAccessIndirectionChain, IndirectionStartIndex) == 0x000020, "Member 'FPropertyAccessIndirectionChain::IndirectionStartIndex' has a wrong offset!");
 static_assert(offsetof(FPropertyAccessIndirectionChain, IndirectionEndIndex) == 0x000024, "Member 'FPropertyAccessIndirectionChain::IndirectionEndIndex' has a wrong offset!");
-static_assert(offsetof(FPropertyAccessIndirectionChain, EventId) == 0x000028, "Member 'FPropertyAccessIndirectionChain::EventId' has a wrong offset!");
+static_assert(offsetof(FPropertyAccessIndirectionChain, EventID) == 0x000028, "Member 'FPropertyAccessIndirectionChain::EventID' has a wrong offset!");
 
 // ScriptStruct PropertyAccess.PropertyAccessIndirection
 // 0x0040 (0x0040 - 0x0000)

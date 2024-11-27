@@ -302,24 +302,6 @@ enum class EGeometryCollectionCacheType : uint8
 	EGeometryCollectionCacheType_MAX         = 4,
 };
 
-// ScriptStruct Chaos.SolverCollisionFilterSettings
-// 0x0010 (0x0010 - 0x0000)
-struct FSolverCollisionFilterSettings final
-{
-public:
-	bool                                          FilterEnabled;                                     // 0x0000(0x0001)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	uint8                                         Pad_1[0x3];                                        // 0x0001(0x0003)(Fixing Size After Last Property [ Dumper-7 ])
-	float                                         MinMass;                                           // 0x0004(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	float                                         MinSpeed;                                          // 0x0008(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-	float                                         MinImpulse;                                        // 0x000C(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
-};
-static_assert(alignof(FSolverCollisionFilterSettings) == 0x000004, "Wrong alignment on FSolverCollisionFilterSettings");
-static_assert(sizeof(FSolverCollisionFilterSettings) == 0x000010, "Wrong size on FSolverCollisionFilterSettings");
-static_assert(offsetof(FSolverCollisionFilterSettings, FilterEnabled) == 0x000000, "Member 'FSolverCollisionFilterSettings::FilterEnabled' has a wrong offset!");
-static_assert(offsetof(FSolverCollisionFilterSettings, MinMass) == 0x000004, "Member 'FSolverCollisionFilterSettings::MinMass' has a wrong offset!");
-static_assert(offsetof(FSolverCollisionFilterSettings, MinSpeed) == 0x000008, "Member 'FSolverCollisionFilterSettings::MinSpeed' has a wrong offset!");
-static_assert(offsetof(FSolverCollisionFilterSettings, MinImpulse) == 0x00000C, "Member 'FSolverCollisionFilterSettings::MinImpulse' has a wrong offset!");
-
 // ScriptStruct Chaos.SolverBreakingFilterSettings
 // 0x0010 (0x0010 - 0x0000)
 struct FSolverBreakingFilterSettings final
@@ -337,6 +319,24 @@ static_assert(offsetof(FSolverBreakingFilterSettings, FilterEnabled) == 0x000000
 static_assert(offsetof(FSolverBreakingFilterSettings, MinMass) == 0x000004, "Member 'FSolverBreakingFilterSettings::MinMass' has a wrong offset!");
 static_assert(offsetof(FSolverBreakingFilterSettings, MinSpeed) == 0x000008, "Member 'FSolverBreakingFilterSettings::MinSpeed' has a wrong offset!");
 static_assert(offsetof(FSolverBreakingFilterSettings, MinVolume) == 0x00000C, "Member 'FSolverBreakingFilterSettings::MinVolume' has a wrong offset!");
+
+// ScriptStruct Chaos.SolverCollisionFilterSettings
+// 0x0010 (0x0010 - 0x0000)
+struct FSolverCollisionFilterSettings final
+{
+public:
+	bool                                          FilterEnabled;                                     // 0x0000(0x0001)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	uint8                                         Pad_1[0x3];                                        // 0x0001(0x0003)(Fixing Size After Last Property [ Dumper-7 ])
+	float                                         MinMass;                                           // 0x0004(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	float                                         MinSpeed;                                          // 0x0008(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+	float                                         MinImpulse;                                        // 0x000C(0x0004)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
+};
+static_assert(alignof(FSolverCollisionFilterSettings) == 0x000004, "Wrong alignment on FSolverCollisionFilterSettings");
+static_assert(sizeof(FSolverCollisionFilterSettings) == 0x000010, "Wrong size on FSolverCollisionFilterSettings");
+static_assert(offsetof(FSolverCollisionFilterSettings, FilterEnabled) == 0x000000, "Member 'FSolverCollisionFilterSettings::FilterEnabled' has a wrong offset!");
+static_assert(offsetof(FSolverCollisionFilterSettings, MinMass) == 0x000004, "Member 'FSolverCollisionFilterSettings::MinMass' has a wrong offset!");
+static_assert(offsetof(FSolverCollisionFilterSettings, MinSpeed) == 0x000008, "Member 'FSolverCollisionFilterSettings::MinSpeed' has a wrong offset!");
+static_assert(offsetof(FSolverCollisionFilterSettings, MinImpulse) == 0x00000C, "Member 'FSolverCollisionFilterSettings::MinImpulse' has a wrong offset!");
 
 // ScriptStruct Chaos.SolverTrailingFilterSettings
 // 0x0010 (0x0010 - 0x0000)

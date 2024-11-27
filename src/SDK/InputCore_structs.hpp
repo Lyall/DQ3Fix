@@ -58,7 +58,7 @@ enum class EConsoleForGamepadLabels : uint8
 };
 
 // Enum InputCore.EControllerHand
-// NumValues: 0x0013
+// NumValues: 0x0014
 enum class EControllerHand : uint8
 {
 	Left                                     = 0,
@@ -67,19 +67,20 @@ enum class EControllerHand : uint8
 	Pad                                      = 3,
 	ExternalCamera                           = 4,
 	Gun                                      = 5,
-	Special_1                                = 6,
-	Special_2                                = 7,
-	Special_3                                = 8,
-	Special_4                                = 9,
-	Special_5                                = 10,
-	Special_6                                = 11,
-	Special_7                                = 12,
-	Special_8                                = 13,
-	Special_9                                = 14,
-	Special_10                               = 15,
-	Special_11                               = 16,
-	ControllerHand_Count                     = 17,
-	EControllerHand_MAX                      = 18,
+	HMD                                      = 6,
+	Special_1                                = 7,
+	Special_2                                = 8,
+	Special_3                                = 9,
+	Special_4                                = 10,
+	Special_5                                = 11,
+	Special_6                                = 12,
+	Special_7                                = 13,
+	Special_8                                = 14,
+	Special_9                                = 15,
+	Special_10                               = 16,
+	Special_11                               = 17,
+	ControllerHand_Count                     = 18,
+	EControllerHand_MAX                      = 19,
 };
 
 // ScriptStruct InputCore.Key

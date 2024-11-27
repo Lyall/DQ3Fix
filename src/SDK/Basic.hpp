@@ -31,12 +31,12 @@ using namespace UC;
 */
 namespace Offsets
 {
-	inline int32 GObjects          = 0x0;
-	inline int32 AppendString      = 0x0;
-	inline int32 GNames            = 0x0;
-	inline int32 GWorld            = 0x0;
-	inline int32 ProcessEvent      = 0x0;
-	inline int32 ProcessEventIdx   = 0x00000044;
+	inline int32 GObjects          = 0x00000000;
+	inline int32 AppendString      = 0x00000000;
+	inline int32 GNames            = 0x00000000;
+	inline int32 GWorld            = 0x00000000;
+	inline int32 ProcessEvent      = 0x00000000;
+	inline int32 ProcessEventIdx   = 0x00000045;
 }
 
 namespace InSDKUtils
@@ -84,7 +84,7 @@ class UClass;
 class UObject;
 class UFunction;
 
-struct FName;
+class FName;
 
 namespace BasicFilesImpleUtils
 {
@@ -187,53 +187,57 @@ static_assert(alignof(FUObjectItem) == 0x000008, "Wrong alignment on FUObjectIte
 static_assert(sizeof(FUObjectItem) == 0x000018, "Wrong size on FUObjectItem");
 static_assert(offsetof(FUObjectItem, Object) == 0x000000, "Member 'FUObjectItem::Object' has a wrong offset!");
 
-class TUObjectArray
+// Predefined struct TUObjectArray
+// 0x0020 (0x0020 - 0x0000)
+class TUObjectArray final
 {
 public:
-	enum
-	{
-		ElementsPerChunk = 0x10000,
-	};
-
-private:
-	static inline auto DecryptPtr = [](void* ObjPtr) -> uint8*
+	static constexpr auto DecryptPtr = [](void* ObjPtr) -> uint8*
 	{
 		return reinterpret_cast<uint8*>(ObjPtr);
 	};
 
-public:
-	FUObjectItem** Objects;
-	uint8 Pad_0[0x08];
-	int32 MaxElements;
-	int32 NumElements;
-	int32 MaxChunks;
-	int32 NumChunks;
+	static constexpr int32                        ElementsPerChunk = 0x10000;                        // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
+
+	struct FUObjectItem**                         Objects;                                           // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
+	uint8                                         Pad_8[0x8];                                        // 0x0008(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
+	int32                                         MaxElements;                                       // 0x0010(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	int32                                         NumElements;                                       // 0x0014(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	int32                                         MaxChunks;                                         // 0x0018(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	int32                                         NumChunks;                                         // 0x001C(0x0004)(NOT AUTO-GENERATED PROPERTY)
 
 public:
 	inline int32 Num() const
 	{
 		return NumElements;
 	}
-
-	inline FUObjectItem** GetDecrytedObjPtr() const
+	
+	FUObjectItem** GetDecrytedObjPtr() const
 	{
 		return reinterpret_cast<FUObjectItem**>(DecryptPtr(Objects));
 	}
-
+	
 	inline class UObject* GetByIndex(const int32 Index) const
 	{
 		const int32 ChunkIndex = Index / ElementsPerChunk;
 		const int32 InChunkIdx = Index % ElementsPerChunk;
-
+		
 		if (ChunkIndex >= NumChunks || Index >= NumElements)
-			return nullptr;
-	
+		    return nullptr;
+		
 		FUObjectItem* ChunkPtr = GetDecrytedObjPtr()[ChunkIndex];
 		if (!ChunkPtr) return nullptr;
-
+		
 		return ChunkPtr[InChunkIdx].Object;
 	}
 };
+static_assert(alignof(TUObjectArray) == 0x000008, "Wrong alignment on TUObjectArray");
+static_assert(sizeof(TUObjectArray) == 0x000020, "Wrong size on TUObjectArray");
+static_assert(offsetof(TUObjectArray, Objects) == 0x000000, "Member 'TUObjectArray::Objects' has a wrong offset!");
+static_assert(offsetof(TUObjectArray, MaxElements) == 0x000010, "Member 'TUObjectArray::MaxElements' has a wrong offset!");
+static_assert(offsetof(TUObjectArray, NumElements) == 0x000014, "Member 'TUObjectArray::NumElements' has a wrong offset!");
+static_assert(offsetof(TUObjectArray, MaxChunks) == 0x000018, "Member 'TUObjectArray::MaxChunks' has a wrong offset!");
+static_assert(offsetof(TUObjectArray, NumChunks) == 0x00001C, "Member 'TUObjectArray::NumChunks' has a wrong offset!");
 
 class TUObjectArrayWrapper
 {
@@ -273,6 +277,11 @@ public:
 		return reinterpret_cast<class TUObjectArray*>(GObjectsAddress);
 	}
 
+	inline TUObjectArray& operator*() const
+	{
+		return *reinterpret_cast<class TUObjectArray*>(GObjectsAddress);
+	}
+
 	inline operator const void* ()
 	{
 		if (!GObjectsAddress) [[unlikely]]
@@ -290,24 +299,138 @@ public:
 	}
 };
 
-// Predefined struct FName
+// Predefined struct FNumberedData
 // 0x0008 (0x0008 - 0x0000)
-class FName final
+struct FNumberedData final
 {
 public:
-	static inline void*                           AppendString = nullptr;                            // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	uint8                                         Id[0x4];                                           // 0x0000(0x0001)(NOT AUTO-GENERATED PROPERTY)
+	uint8                                         Number[0x4];                                       // 0x0004(0x0001)(NOT AUTO-GENERATED PROPERTY)
+
+public:
+	int32 GetTypedId() const
+	{
+		return reinterpret_cast<int32>(Id);
+	}
+	uint32 GetNumber() const
+	{
+		return reinterpret_cast<uint32>(Number);
+	}
+};
+static_assert(alignof(FNumberedData) == 0x000001, "Wrong alignment on FNumberedData");
+static_assert(sizeof(FNumberedData) == 0x000008, "Wrong size on FNumberedData");
+static_assert(offsetof(FNumberedData, Id) == 0x000000, "Member 'FNumberedData::Id' has a wrong offset!");
+static_assert(offsetof(FNumberedData, Number) == 0x000004, "Member 'FNumberedData::Number' has a wrong offset!");
+
+// Predefined struct FNameEntryHeader
+// 0x0002 (0x0002 - 0x0000)
+struct FNameEntryHeader final
+{
+public:
+	uint16                                        bIsWide : 1;                                       // 0x0000(0x0002)(BitIndex: 0x00, PropSize: 0x0002 (NOT AUTO-GENERATED PROPERTY))
+	uint16                                        BitPad_0_1 : 5;                                    // 0x0000(0x0002)(Fixing Bit-Field Size Between Bits [ Dumper-7 ])
+	uint16                                        Len : 10;                                          // 0x0000(0x0002)(BitIndex: 0x06, PropSize: 0x0002 (NOT AUTO-GENERATED PROPERTY))
+};
+static_assert(alignof(FNameEntryHeader) == 0x000002, "Wrong alignment on FNameEntryHeader");
+static_assert(sizeof(FNameEntryHeader) == 0x000002, "Wrong size on FNameEntryHeader");
+
+// Predefined struct FStringData
+// 0x0800 (0x0800 - 0x0000)
+union FStringData final
+{
+public:
+	char                                          AnsiName[0x400];                                   // 0x0000(0x0001)(NOT AUTO-GENERATED PROPERTY)
+	wchar_t                                       WideName[0x400];                                   // 0x0000(0x0002)(NOT AUTO-GENERATED PROPERTY)
+};
+static_assert(alignof(FStringData) == 0x000002, "Wrong alignment on FStringData");
+static_assert(sizeof(FStringData) == 0x000800, "Wrong size on FStringData");
+static_assert(offsetof(FStringData, AnsiName) == 0x000000, "Member 'FStringData::AnsiName' has a wrong offset!");
+static_assert(offsetof(FStringData, WideName) == 0x000000, "Member 'FStringData::WideName' has a wrong offset!");
+
+// Predefined struct FNameEntry
+// 0x0802 (0x0802 - 0x0000)
+struct FNameEntry final
+{
+public:
+	struct FNameEntryHeader                       Header;                                            // 0x0000(0x0002)(NOT AUTO-GENERATED PROPERTY)
+	union FStringData                             Name;                                              // 0x0002(0x0800)(NOT AUTO-GENERATED PROPERTY)
+
+public:
+	bool IsWide() const
+	{
+		return Header.bIsWide;
+	}
+	std::string GetString() const
+	{
+		if (IsWide())
+		{
+			std::wstring WideString(Name.WideName, Header.Len);
+			return std::string(WideString.begin(), WideString.end());
+		}
+	
+		return std::string(Name.AnsiName, Header.Len);
+	}
+};
+static_assert(alignof(FNameEntry) == 0x000002, "Wrong alignment on FNameEntry");
+static_assert(sizeof(FNameEntry) == 0x000802, "Wrong size on FNameEntry");
+static_assert(offsetof(FNameEntry, Header) == 0x000000, "Member 'FNameEntry::Header' has a wrong offset!");
+static_assert(offsetof(FNameEntry, Name) == 0x000002, "Member 'FNameEntry::Name' has a wrong offset!");
+
+// Predefined struct FNamePool
+// 0x10010 (0x10010 - 0x0000)
+class FNamePool final
+{
+public:
+	static constexpr uint32                       FNameEntryStride = 0x0002;                         // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	static constexpr uint32                       FNameBlockOffsetBits = 0x0010;                     // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	static constexpr uint32                       FNameBlockOffsets = 1 << FNameBlockOffsetBits;     // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
+
+	uint8                                         Pad_0[0x8];                                        // 0x0000(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
+	uint32                                        CurrentBlock;                                      // 0x0008(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	uint32                                        CurrentByteCursor;                                 // 0x000C(0x0008)(NOT AUTO-GENERATED PROPERTY)
+	uint8*                                        Blocks[0x2000];                                    // 0x0010(0x10000)(NOT AUTO-GENERATED PROPERTY)
+
+public:
+	bool IsValidIndex(int32 Index, int32 ChunkIdx, int32 InChunkIdx) const
+	{
+		return ChunkIdx <= CurrentBlock && !(ChunkIdx == CurrentBlock && InChunkIdx > CurrentByteCursor);
+	}
+	
+	FNameEntry* GetEntryByIndex(int32 Index) const
+	{
+		const int32 ChunkIdx = Index >> FNameBlockOffsetBits;
+		const int32 InChunk = (Index & (FNameBlockOffsets - 1));
+	
+		if (!IsValidIndex(Index, ChunkIdx, InChunk))
+			return nullptr;
+	
+		return reinterpret_cast<FNameEntry*>(Blocks[ChunkIdx] + (InChunk * FNameEntryStride));
+	}
+};
+static_assert(alignof(FNamePool) == 0x000008, "Wrong alignment on FNamePool");
+static_assert(sizeof(FNamePool) == 0x010010, "Wrong size on FNamePool");
+static_assert(offsetof(FNamePool, CurrentBlock) == 0x000008, "Member 'FNamePool::CurrentBlock' has a wrong offset!");
+static_assert(offsetof(FNamePool, CurrentByteCursor) == 0x00000C, "Member 'FNamePool::CurrentByteCursor' has a wrong offset!");
+static_assert(offsetof(FNamePool, Blocks) == 0x000010, "Member 'FNamePool::Blocks' has a wrong offset!");
+
+// Predefined struct FName
+// 0x0008 (0x0008 - 0x0000)
+struct FName final
+{
+public:
+	static inline FNamePool*                      GNames = nullptr;                                  // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
 
 	int32                                         ComparisonIndex;                                   // 0x0000(0x0004)(NOT AUTO-GENERATED PROPERTY)
-	int32                                         Number;                                            // 0x0004(0x0004)(NOT AUTO-GENERATED PROPERTY)
+	uint32                                        Number;                                            // 0x0004(0x0004)(NOT AUTO-GENERATED PROPERTY)
 
 public:
 	static void InitInternal()
 	{
-		AppendString = reinterpret_cast<void*>(InSDKUtils::GetImageBase() + Offsets::AppendString);
+		GNames = reinterpret_cast<FNamePool*>(InSDKUtils::GetImageBase() + Offsets::GNames);
 	}
 	static void InitManually(void* Location)
 	{
-		AppendString = reinterpret_cast<void*>(Location);
+		GNames = reinterpret_cast<FNamePool*>(Location);
 	}
 
 	int32 GetDisplayIndex() const
@@ -317,17 +440,15 @@ public:
 	
 	std::string GetRawString() const
 	{
-		thread_local FAllocatedString TempString(1024);
-	
-		if (!AppendString)
+		if (!GNames)
 			InitInternal();
 	
-		InSDKUtils::CallGameFunction(reinterpret_cast<void(*)(const FName*, FString&)>(AppendString), this, TempString);
+		std::string RetStr = FName::GNames->GetEntryByIndex(GetDisplayIndex())->GetString();
 	
-		std::string OutputString = TempString.ToString();
-		TempString.Clear();
+		if (Number > 0)
+			RetStr += ("_" + std::to_string(Number - 1));
 	
-		return OutputString;
+		return RetStr;
 	}
 	
 	std::string ToString() const
@@ -711,13 +832,27 @@ public:
 };
 
 
+// Predefined struct FScriptDelegate
+// 0x0010 (0x0010 - 0x0000)
+struct FScriptDelegate
+{
+public:
+	FWeakObjectPtr                                Object;                                            // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
+	FName                                         FunctionName;                                      // 0x0008(0x0008)(NOT AUTO-GENERATED PROPERTY)
+};
+static_assert(alignof(FScriptDelegate) == 0x000004, "Wrong alignment on FScriptDelegate");
+static_assert(sizeof(FScriptDelegate) == 0x000010, "Wrong size on FScriptDelegate");
+static_assert(offsetof(FScriptDelegate, Object) == 0x000000, "Member 'FScriptDelegate::Object' has a wrong offset!");
+static_assert(offsetof(FScriptDelegate, FunctionName) == 0x000008, "Member 'FScriptDelegate::FunctionName' has a wrong offset!");
+
 // Predefined struct TDelegate
-// 0x0000 (0x0000 - 0x0000)
+// 0x0010 (0x0010 - 0x0000)
 template<typename FunctionSignature>
 class TDelegate
 {
 public:
 	struct InvalidUseOfTDelegate                  TemplateParamIsNotAFunctionSignature;              // 0x0000(0x0000)(NOT AUTO-GENERATED PROPERTY)
+	uint8                                         Pad_0[0x10];                                       // 0x0000(0x0010)(Fixing Struct Size After Last Property [ Dumper-7 ])
 };
 
 // Predefined struct TDelegate<Ret(Args...)>
@@ -726,8 +861,25 @@ template<typename Ret, typename... Args>
 class TDelegate<Ret(Args...)>
 {
 public:
-	FWeakObjectPtr                                Object;                                            // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
-	FName                                         FunctionName;                                      // 0x0008(0x0008)(NOT AUTO-GENERATED PROPERTY)
+	FScriptDelegate                               BoundFunction;                                     // 0x0000(0x0010)(NOT AUTO-GENERATED PROPERTY)
+};
+
+// Predefined struct TMulticastInlineDelegate
+// 0x0010 (0x0010 - 0x0000)
+template<typename FunctionSignature>
+class TMulticastInlineDelegate
+{
+public:
+	struct InvalidUseOfTMulticastInlineDelegate   TemplateParamIsNotAFunctionSignature;              // 0x0000(0x0010)(NOT AUTO-GENERATED PROPERTY)
+};
+
+// Predefined struct TMulticastInlineDelegate<Ret(Args...)>
+// 0x0000 (0x0000 - 0x0000)
+template<typename Ret, typename... Args>
+class TMulticastInlineDelegate<Ret(Args...)>
+{
+public:
+	TArray<FScriptDelegate>                       InvocationList;                                    // 0x0000(0x0010)(NOT AUTO-GENERATED PROPERTY)
 };
 
 #define UE_ENUM_OPERATORS(EEnumClass)																																	\
@@ -913,7 +1065,7 @@ enum class EClassCastFlags : uint64
 	SetProperty							= 0x0000800000000000,
 	EnumProperty						= 0x0001000000000000,
 	USparseDelegateFunction				= 0x0002000000000000,
-	FMulticastInlineDelegateProperty	= 0x0004000000000000,
+	FMulticasTMulticastInlineDelegateProperty	= 0x0004000000000000,
 	FMulticastSparseDelegateProperty	= 0x0008000000000000,
 	FFieldPathProperty					= 0x0010000000000000,
 	FLargeWorldCoordinatesRealProperty	= 0x0080000000000000,
@@ -1016,7 +1168,7 @@ static_assert(offsetof(FFieldClass, SuperClass) == 0x000020, "Member 'FFieldClas
 class FFieldVariant
 {
 public:
-	using ContainerType = union { class FField* Field; class UObject* Object; };                     // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
+	using ContainerType = union { class FField* Field; class UObject* Object; };
 
 	ContainerType                                 Container;                                         // 0x0000(0x0008)(NOT AUTO-GENERATED PROPERTY)
 	bool                                          bIsUObject;                                        // 0x0008(0x0001)(NOT AUTO-GENERATED PROPERTY)

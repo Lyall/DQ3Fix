@@ -45,12 +45,15 @@ bool bFixAspect = true;
 bool bFixHUD = true;
 bool bUncapFPS = true;
 bool bSkipLogos = true;
+bool bEnableConsole = false;
 
 // Variables
 int iCurrentResX;
 int iCurrentResY;
 int iOldResX;
 int iOldResY;
+SDK::UEngine* Engine = nullptr;
+SDK::UInputSettings* InputSettings = nullptr;
 
 void Logging()
 {
@@ -121,12 +124,14 @@ void Configuration()
     inipp::get_value(ini.sections["Fix HUD"], "Enabled", bFixHUD);
     inipp::get_value(ini.sections["Uncap Framerate"], "Enabled", bUncapFPS);
     inipp::get_value(ini.sections["Skip Logos"], "Enabled", bSkipLogos);
+    inipp::get_value(ini.sections["Developer Console"], "Enabled", bEnableConsole);
 
     // Log ini parse
     spdlog_confparse(bFixAspect);
     spdlog_confparse(bFixHUD);
     spdlog_confparse(bUncapFPS);
     spdlog_confparse(bSkipLogos);
+    spdlog_confparse(bEnableConsole);
 
     spdlog::info("----------");
 }
@@ -369,6 +374,69 @@ void Framerate()
     }
 }
 
+void EnableConsole()
+{
+    if (bEnableConsole) {
+        // Allow setting read-only CVars
+        // FConsoleManager::ProcessUserConsoleInput
+        std::uint8_t* ReadOnlyCVarsScanResult = Memory::PatternScan(exeModule, "0F 84 ?? ?? ?? ?? 48 8B ?? 48 8B ?? FF ?? ?? A8 01");
+        if (ReadOnlyCVarsScanResult) {
+            spdlog::info("Read-only CVars: Address is {:s}+{:x}", sExeName.c_str(), ReadOnlyCVarsScanResult - (std::uint8_t*)exeModule);
+            static SafetyHookMid ReadOnlyCVarsMidHook{};
+            ReadOnlyCVarsMidHook = safetyhook::create_mid(ReadOnlyCVarsScanResult + 0x6,
+                [](SafetyHookContext& ctx) {
+                    if (ctx.rax + 0x18)
+                        *reinterpret_cast<BYTE*>(ctx.rax + 0x18) = 0;
+                });
+        }
+        else {
+            spdlog::error("Read-only CVars: Pattern scan failed.");
+        }
+
+        // Get GEngine
+        for (int i = 0; i < 200; ++i) { // 20s
+            Engine = SDK::UEngine::GetEngine();
+
+            if (Engine && Engine->ConsoleClass && Engine->GameViewport)
+                break;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        if (!Engine || !Engine->ConsoleClass || !Engine->GameViewport) {
+            spdlog::error("Enable Console: Failed to find GEngine address after 20 seconds.");
+            return;
+        }
+
+        spdlog::info("Enable Console: GEngine address = {:x}", (uintptr_t)Engine);
+
+        // Construct console
+        SDK::UObject* NewObject = SDK::UGameplayStatics::SpawnObject(Engine->ConsoleClass, Engine->GameViewport);
+        if (NewObject) {
+            Engine->GameViewport->ViewportConsole = static_cast<SDK::UConsole*>(NewObject);
+            spdlog::info("Construct Console: Console object constructed.");
+        }
+        else {
+            spdlog::error("Enable Console: Failed to construct console object.");
+            return;
+        }
+
+        // Check console key bind
+        SDK::UInputSettings* InputSettings = SDK::UInputSettings::GetDefaultObj();
+        if (InputSettings) {
+            if (InputSettings->ConsoleKeys && InputSettings->ConsoleKeys.Num() > 0) {
+                spdlog::info("Enable Console: Console enabled - access it using key: {}.", InputSettings->ConsoleKeys[1].KeyName.ToString().c_str());
+            }
+            else {
+                spdlog::error("Enable Console: Console enabled but no console key is bound.\nAdd this to %LOCALAPPDATA%\\Stalker2\\Saved\\Config\\WindowsNoEditor\\Input.ini -\n[/Script/Engine.InputSettings]\nConsoleKeys = Tilde");
+            }
+        }
+        else {
+            spdlog::error("Enable Console: Failed to retreive input settings.");
+        }
+    }
+}
+
 DWORD __stdcall Main(void*)
 {
     Logging();
@@ -379,6 +447,7 @@ DWORD __stdcall Main(void*)
     AspectRatioFOV();
     HUD();
     Framerate();
+    EnableConsole();
     return true;
 }
 

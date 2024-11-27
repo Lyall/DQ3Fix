@@ -46,6 +46,8 @@ bool bFixHUD = true;
 bool bUncapFPS = true;
 bool bSkipLogos = true;
 bool bEnableConsole = false;
+bool bApplyCVars = false;
+std::vector<std::pair<std::string, std::string>> sCVars;
 
 // Variables
 int iCurrentResX;
@@ -54,6 +56,7 @@ int iOldResX;
 int iOldResY;
 SDK::UEngine* Engine = nullptr;
 SDK::UInputSettings* InputSettings = nullptr;
+std::set<std::string> loggedCVars;
 
 void Logging()
 {
@@ -125,6 +128,11 @@ void Configuration()
     inipp::get_value(ini.sections["Uncap Framerate"], "Enabled", bUncapFPS);
     inipp::get_value(ini.sections["Skip Logos"], "Enabled", bSkipLogos);
     inipp::get_value(ini.sections["Developer Console"], "Enabled", bEnableConsole);
+    inipp::get_value(ini.sections["Apply CVars"], "Enabled", bApplyCVars);
+    auto it = ini.sections.find("CVars");
+    if (it != ini.sections.end())
+        for (const auto& pair : it->second)
+            sCVars.emplace_back(pair.first, pair.second);
 
     // Log ini parse
     spdlog_confparse(bFixAspect);
@@ -132,6 +140,9 @@ void Configuration()
     spdlog_confparse(bUncapFPS);
     spdlog_confparse(bSkipLogos);
     spdlog_confparse(bEnableConsole);
+    spdlog_confparse(bApplyCVars);
+    for (const auto& cvar : sCVars)
+        spdlog::info("Config Parse: sCVars: {} = {}", cvar.first, cvar.second);
 
     spdlog::info("----------");
 }
@@ -360,20 +371,37 @@ void HUD()
 
 void Miscellaneous()
 {
-    // ULevelSequence::PostLoad()
-    std::uint8_t* LevelSequencePostLoadScanResult = Memory::PatternScan(exeModule, "4C ?? ?? 55 53 48 8B ?? 48 83 ?? ?? F6 ?? ?? 01 48 8B ?? 0F 84 ?? ?? ?? ??");
-    if (LevelSequencePostLoadScanResult) {
-        spdlog::info("Set CVars: Address is {:s}+{:x}", sExeName.c_str(), LevelSequencePostLoadScanResult - (std::uint8_t*)exeModule);
-        static SafetyHookMid LevelSequencePostLoadMidHook{};
-        LevelSequencePostLoadMidHook = safetyhook::create_mid(LevelSequencePostLoadScanResult - 0x10,
-            [](SafetyHookContext& ctx) {
-                //SDK::UKismetSystemLibrary::ExecuteConsoleCommand(nullptr, L"r.ScreenPercentage 125", nullptr);
-            });
-    }
-    else {
-        spdlog::error("Set CVars: Pattern scan failed.");
-    }
+    if (bApplyCVars) {
+        // ULevelSequence::PostLoad()
+        std::uint8_t* LevelSequencePostLoadScanResult = Memory::PatternScan(exeModule, "4C ?? ?? 55 53 48 8B ?? 48 83 ?? ?? F6 ?? ?? 01 48 8B ?? 0F 84 ?? ?? ?? ??");
+        if (LevelSequencePostLoadScanResult) {
+            spdlog::info("Apply CVars: Address is {:s}+{:x}", sExeName.c_str(), LevelSequencePostLoadScanResult - (std::uint8_t*)exeModule);
+            static SafetyHookMid LevelSequencePostLoadMidHook{};
+            LevelSequencePostLoadMidHook = safetyhook::create_mid(LevelSequencePostLoadScanResult - 0x10,
+                [](SafetyHookContext& ctx) {
+                    // Apply cvars from ini
+                    for (const auto& cvar : sCVars) {
+                        const std::string& cvarName = cvar.first;
+                        const std::string& cvarValue = cvar.second;
 
+                        std::wstringstream wss;
+                        wss << std::wstring(cvarName.begin(), cvarName.end()) << L" " << std::wstring(cvarValue.begin(), cvarValue.end());
+                        std::wstring command = wss.str();
+
+                        SDK::UKismetSystemLibrary::ExecuteConsoleCommand(nullptr, command.c_str(), nullptr);
+
+                        if (loggedCVars.find(cvarName) == loggedCVars.end()) {
+                            spdlog::info("Apply CVars: Set {} = {}", cvar.first, cvar.second);
+                            loggedCVars.insert(cvarName);
+                        }
+                    }
+                });
+        }
+        else {
+            spdlog::error("Apply CVars: Pattern scan failed.");
+        }
+    }
+   
     if (bUncapFPS) {
         // Uncap t.maxFPS
         std::uint8_t* MaxFPSScanResult = Memory::PatternScan(exeModule, "73 ?? 80 3D ?? ?? ?? ?? 00 74 ?? FF ?? ?? ?? ?? ?? 3B ?? ?? ?? ?? ?? 0F ?? ??");
@@ -391,7 +419,7 @@ void Miscellaneous()
 void EnableConsole()
 {
     if (bEnableConsole) {
-        // Allow setting read-only CVars
+        // Allow setting read-only cvars
         // FConsoleManager::ProcessUserConsoleInput
         std::uint8_t* ReadOnlyCVarsScanResult = Memory::PatternScan(exeModule, "0F 84 ?? ?? ?? ?? 48 8B ?? 48 8B ?? FF ?? ?? A8 01");
         if (ReadOnlyCVarsScanResult) {

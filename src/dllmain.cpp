@@ -358,8 +358,22 @@ void HUD()
     }
 }
 
-void Framerate()
+void Miscellaneous()
 {
+    // ULevelSequence::PostLoad()
+    std::uint8_t* LevelSequencePostLoadScanResult = Memory::PatternScan(exeModule, "4C ?? ?? 55 53 48 8B ?? 48 83 ?? ?? F6 ?? ?? 01 48 8B ?? 0F 84 ?? ?? ?? ??");
+    if (LevelSequencePostLoadScanResult) {
+        spdlog::info("Set CVars: Address is {:s}+{:x}", sExeName.c_str(), LevelSequencePostLoadScanResult - (std::uint8_t*)exeModule);
+        static SafetyHookMid LevelSequencePostLoadMidHook{};
+        LevelSequencePostLoadMidHook = safetyhook::create_mid(LevelSequencePostLoadScanResult - 0x10,
+            [](SafetyHookContext& ctx) {
+                //SDK::UKismetSystemLibrary::ExecuteConsoleCommand(nullptr, L"r.ScreenPercentage 125", nullptr);
+            });
+    }
+    else {
+        spdlog::error("Set CVars: Pattern scan failed.");
+    }
+
     if (bUncapFPS) {
         // Uncap t.maxFPS
         std::uint8_t* MaxFPSScanResult = Memory::PatternScan(exeModule, "73 ?? 80 3D ?? ?? ?? ?? 00 74 ?? FF ?? ?? ?? ?? ?? 3B ?? ?? ?? ?? ?? 0F ?? ??");
@@ -446,7 +460,7 @@ DWORD __stdcall Main(void*)
     CurrentResolution();
     AspectRatioFOV();
     HUD();
-    Framerate();
+    Miscellaneous();
     EnableConsole();
     return true;
 }

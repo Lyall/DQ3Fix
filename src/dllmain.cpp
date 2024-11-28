@@ -16,7 +16,7 @@ HMODULE thisModule;
 
 // Fix details
 std::string sFixName = "DQ3Fix";
-std::string sFixVersion = "0.0.1";
+std::string sFixVersion = "0.0.2";
 std::filesystem::path sFixPath;
 
 // Ini
@@ -43,6 +43,7 @@ float fHUDHeightOffset;
 // Ini variables
 bool bFixAspect = true;
 bool bFixHUD = true;
+bool bSpanHUD = false;
 bool bUncapFPS = true;
 bool bSkipLogos = true;
 bool bEnableConsole = false;
@@ -125,6 +126,7 @@ void Configuration()
     // Load settings from ini
     inipp::get_value(ini.sections["Fix Aspect Ratio"], "Enabled", bFixAspect);
     inipp::get_value(ini.sections["Fix HUD"], "Enabled", bFixHUD);
+    inipp::get_value(ini.sections["Fix HUD"], "Span", bSpanHUD);
     inipp::get_value(ini.sections["Uncap Framerate"], "Enabled", bUncapFPS);
     inipp::get_value(ini.sections["Skip Logos"], "Enabled", bSkipLogos);
     inipp::get_value(ini.sections["Developer Console"], "Enabled", bEnableConsole);
@@ -137,6 +139,7 @@ void Configuration()
     // Log ini parse
     spdlog_confparse(bFixAspect);
     spdlog_confparse(bFixHUD);
+    spdlog_confparse(bSpanHUD);
     spdlog_confparse(bUncapFPS);
     spdlog_confparse(bSkipLogos);
     spdlog_confparse(bEnableConsole);
@@ -311,16 +314,22 @@ void HUD()
             spdlog::info("HUD: Size: Address is {:s}+{:x}", sExeName.c_str(), HUDSizeScanResult - (std::uint8_t*)exeModule);
             std::uint8_t* HUDSizeFunction = Memory::GetAbsolute(HUDSizeScanResult + 0x6);
             spdlog::info("HUD: Size: Function address is {:s}+{:x}", sExeName.c_str(), HUDSizeFunction - (std::uint8_t*)exeModule);
-
             if (HUDSizeFunction) {
                 static SafetyHookMid HUDSizeMidHook{};
                 HUDSizeMidHook = safetyhook::create_mid(HUDSizeFunction + 0x7,
                     [](SafetyHookContext& ctx) {
                         if (ctx.xmm0.f32[0] == 0.00f && ctx.xmm0.f32[1] == 0.00f && ctx.xmm0.f32[2] == 1.00f && ctx.xmm0.f32[3] == 1.00f) {
-                            SDK::UObject* obj = (SDK::UObject*)ctx.rcx;      
-                            if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WB_Title2_Root_C") || obj->GetName().contains("WBP_Common_Fading_C")) {
+                            SDK::UObject* obj = (SDK::UObject*)ctx.rcx; 
+                            // Don't centre these HUD elements as they are already centred.
+                            if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WB_Title2_Root_C") || obj->GetName().contains("WBP_Common_Fading_C"))
                                 return;
+
+                            // Span HUD
+                            if (bSpanHUD) {
+                                if (obj->GetName().contains("WB_BattleUnit_Root_C") || obj->GetName().contains("WB_Field_Top_Root_C") || obj->GetName().contains("WB_MiniMapMenu_Root_C") || obj->GetName().contains("WB_TownName_Root_C") || obj->GetName().contains("WB_FacilityShop_Root_C"))
+                                    return;
                             }
+                                                      
 
                             if (fAspectRatio > fNativeAspect) {
                                 ctx.xmm0.f32[0] = fHUDWidthOffset / (float)iCurrentResX;

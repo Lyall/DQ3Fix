@@ -1077,7 +1077,7 @@ static_assert(sizeof(ANicolaPlayerStateBase) == 0x000320, "Wrong size on ANicola
 
 // Class Nicola.BattleCameraControl
 // 0x02A0 (0x04C0 - 0x0220)
-class alignas(0x10) ABattleCameraControl final : public AActor
+class alignas(0x10) ABattleCameraControl : public AActor
 {
 public:
 	TArray<class ABattlePositionLine*>            PositionLines;                                     // 0x0220(0x0010)(BlueprintVisible, ZeroConstructor, NativeAccessSpecifierPublic)
@@ -1461,7 +1461,7 @@ static_assert(offsetof(UUIInitialMenu, Textures) == 0x0000A0, "Member 'UUIInitia
 
 // Class Nicola.BattleCoffin
 // 0x0020 (0x0240 - 0x0220)
-class ABattleCoffin final : public AActor
+class ABattleCoffin : public AActor
 {
 public:
 	class USphereComponent*                       SphereComponent;                                   // 0x0220(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -2084,7 +2084,7 @@ static_assert(sizeof(UBattleMapParameterCollection) == 0x000088, "Wrong size on 
 
 // Class Nicola.BattlePositionLine
 // 0x0048 (0x0268 - 0x0220)
-class ABattlePositionLine final : public AActor
+class ABattlePositionLine : public AActor
 {
 public:
 	bool                                          IsTraceActor;                                      // 0x0220(0x0001)(Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
@@ -2553,7 +2553,7 @@ static_assert(sizeof(IBattleSimpleMenuInterface) == 0x000028, "Wrong size on IBa
 
 // Class Nicola.NicolaSoundAmbientCoastAreaActor
 // 0x0008 (0x0228 - 0x0220)
-class ANicolaSoundAmbientCoastAreaActor final : public AActor
+class ANicolaSoundAmbientCoastAreaActor : public AActor
 {
 public:
 	ESoundAmbientCoastType                        SoundAmbientCoastType;                             // 0x0220(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
@@ -3391,7 +3391,7 @@ static_assert(sizeof(ANicolaListenerPositioningActor) == 0x000220, "Wrong size o
 
 // Class Nicola.BuildingWithJumpPointForFieldSymbol
 // 0x0008 (0x02E0 - 0x02D8)
-class ABuildingWithJumpPointForFieldSymbol final : public ABuildingWithJumpPoint
+class ABuildingWithJumpPointForFieldSymbol : public ABuildingWithJumpPoint
 {
 public:
 	class UBoxComponent*                          BoxComponent;                                      // 0x02D8(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -3865,7 +3865,7 @@ static_assert(offsetof(ACameraCollision, doKeepOutZNegBound) == 0x000319, "Membe
 
 // Class Nicola.CameraKeepOut
 // 0x00B0 (0x02D0 - 0x0220)
-class alignas(0x10) ACameraKeepOut final : public AActor
+class alignas(0x10) ACameraKeepOut : public AActor
 {
 public:
 	class UBoxComponent*                          BoxCollision;                                      // 0x0220(0x0008)(Edit, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -4063,7 +4063,7 @@ static_assert(offsetof(ALandingAttributeVolumeForFieldSymbolBase, collisionCompo
 
 // Class Nicola.LandingAttributeVolumeForFieldSymbolSphere
 // 0x0000 (0x0268 - 0x0268)
-class ALandingAttributeVolumeForFieldSymbolSphere final : public ALandingAttributeVolumeForFieldSymbolBase
+class ALandingAttributeVolumeForFieldSymbolSphere : public ALandingAttributeVolumeForFieldSymbolBase
 {
 public:
 	static class UClass* StaticClass()
@@ -4894,7 +4894,7 @@ static_assert(sizeof(UDlcBase) == 0x000030, "Wrong size on UDlcBase");
 
 // Class Nicola.DLCBoxEvent
 // 0x0030 (0x0270 - 0x0240)
-class ADLCBoxEvent : public AEventActorBase
+class ADLCBoxEvent final : public AEventActorBase
 {
 public:
 	uint8                                         Pad_240[0x8];                                      // 0x0240(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
@@ -5397,7 +5397,7 @@ static_assert(sizeof(UNicolaCharacterComponentBase) == 0x0000B8, "Wrong size on 
 
 // Class Nicola.LightDoorGimmick
 // 0x0060 (0x02D8 - 0x0278)
-class ALightDoorGimmick final : public ADoorGimmick
+class ALightDoorGimmick : public ADoorGimmick
 {
 public:
 	EDoorLightType                                lightType;                                         // 0x0278(0x0001)(Edit, ZeroConstructor, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -10170,7 +10170,7 @@ static_assert(offsetof(UUIFieldEfxMenuWindowVehicleGuide, Slot) == 0x000050, "Me
 
 // Class Nicola.NicolaBattleLevel
 // 0x0008 (0x0268 - 0x0260)
-class ANicolaBattleLevel final : public ANicolaTownDungeonLevel
+class ANicolaBattleLevel : public ANicolaTownDungeonLevel
 {
 public:
 	uint8                                         Pad_260[0x8];                                      // 0x0260(0x0008)(Fixing Struct Size After Last Property [ Dumper-7 ])
@@ -10366,7 +10366,7 @@ static_assert(offsetof(UNicolaBillboardComponent, sceneCaptureActor) == 0x0002B0
 
 // Class Nicola.VisualizeEventObjectActor
 // 0x0018 (0x0238 - 0x0220)
-class AVisualizeEventObjectActor final : public AActor
+class AVisualizeEventObjectActor : public AActor
 {
 public:
 	TArray<struct FObjectFlagVisibleInfo>         ObjectVisibleInfoList;                             // 0x0220(0x0010)(Edit, ZeroConstructor, Protected, NativeAccessSpecifierProtected)
@@ -10512,7 +10512,7 @@ static_assert(offsetof(ANicolaFieldTriggerBase, bIsBlendTimePassedByMoving) == 0
 
 // Class Nicola.NicolaCameraEffectTriggerBase
 // 0x0020 (0x02F0 - 0x02D0)
-class ANicolaCameraEffectTriggerBase final : public ANicolaFieldTriggerBase
+class ANicolaCameraEffectTriggerBase : public ANicolaFieldTriggerBase
 {
 public:
 	class FName                                   CameraEffectAssetName;                             // 0x02C8(0x0008)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
@@ -10638,7 +10638,7 @@ static_assert(sizeof(UNicolaCameraShake) == 0x0001B0, "Wrong size on UNicolaCame
 
 // Class Nicola.NicolaCameraTriggerBase
 // 0x0040 (0x0310 - 0x02D0)
-class ANicolaCameraTriggerBase final : public ANicolaFieldTriggerBase
+class ANicolaCameraTriggerBase : public ANicolaFieldTriggerBase
 {
 public:
 	bool                                          bDoOverwriteAngleElevation;                        // 0x02C8(0x0001)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
@@ -11899,7 +11899,7 @@ static_assert(sizeof(UUnitPassiveDataFL) == 0x000028, "Wrong size on UUnitPassiv
 
 // Class Nicola.NicolaEncountCalcActor
 // 0x0000 (0x0220 - 0x0220)
-class ANicolaEncountCalcActor final : public AActor
+class ANicolaEncountCalcActor : public AActor
 {
 public:
 	float CalcEncountSec(float min_time, float max_time, float offset_time);
@@ -12206,7 +12206,7 @@ static_assert(sizeof(ANicolaEventSequencerPostProcessVolume) == 0x0007D0, "Wrong
 
 // Class Nicola.NicolaFadingActor
 // 0x00D0 (0x02F0 - 0x0220)
-class ANicolaFadingActor : public AActor
+class ANicolaFadingActor final : public AActor
 {
 public:
 	class UActorListComponent*                    ActorListComponent;                                // 0x0220(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -12586,7 +12586,7 @@ static_assert(offsetof(ASearchObjectItem, EndTime) == 0x000238, "Member 'ASearch
 
 // Class Nicola.NicolaFieldEffectActor
 // 0x0020 (0x0258 - 0x0238)
-class ANicolaFieldEffectActor final : public ANicolaFieldActorBase
+class ANicolaFieldEffectActor : public ANicolaFieldActorBase
 {
 public:
 	class UBoxComponent*                          triggerControlledEffectRootBoxComponent;           // 0x0238(0x0008)(Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, EditConst, InstancedReference, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
@@ -13018,7 +13018,7 @@ static_assert(sizeof(INicolaFieldSpotInterface) == 0x000028, "Wrong size on INic
 
 // Class Nicola.NicolaFieldStaticMeshActorBase
 // 0x0010 (0x0240 - 0x0230)
-class ANicolaFieldStaticMeshActorBase final : public AStaticMeshActor
+class ANicolaFieldStaticMeshActorBase : public AStaticMeshActor
 {
 public:
 	uint8                                         Pad_230[0x8];                                      // 0x0230(0x0008)(Fixing Size After Last Property [ Dumper-7 ])
@@ -13880,7 +13880,7 @@ static_assert(offsetof(UUIWindowItemIcon2, ItemIcon2) == 0x000048, "Member 'UUIW
 
 // Class Nicola.NicolaLightingEnvMgrActor
 // 0x00A8 (0x02C8 - 0x0220)
-class ANicolaLightingEnvMgrActor final : public AActor
+class ANicolaLightingEnvMgrActor : public AActor
 {
 public:
 	uint8                                         Pad_220[0x34];                                     // 0x0220(0x0034)(Fixing Size After Last Property [ Dumper-7 ])
@@ -13927,7 +13927,7 @@ static_assert(offsetof(ANicolaLightingEnvMgrActor, ActorListComponent) == 0x0002
 
 // Class Nicola.NicolaLightingEnvPresetActor
 // 0x0B60 (0x0D80 - 0x0220)
-class ANicolaLightingEnvPresetActor final : public AActor
+class ANicolaLightingEnvPresetActor : public AActor
 {
 public:
 	class FName                                   PresetName;                                        // 0x0220(0x0008)(Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPublic)
@@ -14109,7 +14109,7 @@ static_assert(offsetof(UUIXenlonWish, ListTop) == 0x000078, "Member 'UUIXenlonWi
 
 // Class Nicola.NicolaLightingEnvVariationTriggerBase
 // 0x0010 (0x02E0 - 0x02D0)
-class ANicolaLightingEnvVariationTriggerBase final : public ANicolaFieldTriggerBase
+class ANicolaLightingEnvVariationTriggerBase : public ANicolaFieldTriggerBase
 {
 public:
 	class FName                                   EnvPresetName;                                     // 0x02C8(0x0008)(Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData, NoDestructor, Protected, HasGetValueTypeHash, NativeAccessSpecifierProtected)
@@ -14435,7 +14435,7 @@ static_assert(offsetof(ANicolaMaterialParameterActor, Collection) == 0x000258, "
 
 // Class Nicola.TownPlayerActor
 // 0x0030 (0x0660 - 0x0630)
-class ATownPlayerActor : public ABreadcrumbman
+class ATownPlayerActor final : public ABreadcrumbman
 {
 public:
 	uint8                                         Pad_630[0x30];                                     // 0x0630(0x0030)(Fixing Struct Size After Last Property [ Dumper-7 ])
@@ -14922,7 +14922,7 @@ static_assert(sizeof(ANicolaResearchGameMode) == 0x0002C0, "Wrong size on ANicol
 
 // Class Nicola.ShineSearchEventForField
 // 0x0030 (0x02D0 - 0x02A0)
-class AShineSearchEventForField final : public AShineSearchEvent
+class AShineSearchEventForField : public AShineSearchEvent
 {
 public:
 	uint8                                         Pad_2A0[0x10];                                     // 0x02A0(0x0010)(Fixing Size After Last Property [ Dumper-7 ])
@@ -15354,7 +15354,7 @@ static_assert(sizeof(UOutputFontSizeSubsytem) == 0x000070, "Wrong size on UOutpu
 
 // Class Nicola.TreasureBoxEvent
 // 0x0018 (0x02B8 - 0x02A0)
-class ATreasureBoxEvent final : public ASearchAnimEvent
+class ATreasureBoxEvent : public ASearchAnimEvent
 {
 public:
 	class UInterpFloat*                           interpEffectInpasu;                                // 0x02A0(0x0008)(ZeroConstructor, Transient, IsPlainOldData, NoDestructor, HasGetValueTypeHash, NativeAccessSpecifierPrivate)
@@ -15378,7 +15378,7 @@ static_assert(offsetof(ATreasureBoxEvent, inpasuMaterialInstance) == 0x0002A8, "
 
 // Class Nicola.NicolaSkySphereActor
 // 0x0020 (0x0250 - 0x0230)
-class ANicolaSkySphereActor final : public AStaticMeshActor
+class ANicolaSkySphereActor : public AStaticMeshActor
 {
 public:
 	uint8                                         Pad_230[0xC];                                      // 0x0230(0x000C)(Fixing Size After Last Property [ Dumper-7 ])
@@ -16442,7 +16442,7 @@ static_assert(offsetof(USequencerPostUpdateComponent, SequencerSpawnCharacterSet
 
 // Class Nicola.ShineChildActorBase
 // 0x0000 (0x0220 - 0x0220)
-class AShineChildActorBase final : public AActor
+class AShineChildActorBase : public AActor
 {
 public:
 	void OnStartShineChildActorEffect();

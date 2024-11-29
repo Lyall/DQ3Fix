@@ -3,6 +3,9 @@
 
 #include "SDK/Engine_classes.hpp"
 #include "SDK/UMG_classes.hpp"
+#include "SDK/WB_BattlePlayerStatus_Root_classes.hpp"
+#include "SDK/WB_Battle_MonsterDamage2_classes.hpp"
+#include "SDK/WB_BattleMonsterName_classes.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -328,6 +331,40 @@ void HUD()
                             if (bSpanHUD) {
                                 if (obj->GetName().contains("WB_BattleUnit_Root_C") || obj->GetName().contains("WB_Field_Top_Root_C") || obj->GetName().contains("WB_MiniMapMenu_Root_C") || obj->GetName().contains("WB_TownName_Root_C") || obj->GetName().contains("WB_FacilityShop_Root_C"))
                                     return;
+
+                                if (obj->GetName().contains("WB_BattlePlayerStatus_Root_C")) {
+                                    SDK::UWB_BattlePlayerStatus_Root_C* bpStatus = (SDK::UWB_BattlePlayerStatus_Root_C*)obj;
+                                    SDK::UCanvasPanelSlot* dmgSlot = (SDK::UCanvasPanelSlot*)bpStatus->M_Damage->Slot;
+                                    SDK::UCanvasPanelSlot* nameSlot = (SDK::UCanvasPanelSlot*)bpStatus->M_NAME->Slot;
+
+                                    SDK::FMargin dmgOffsets = dmgSlot->GetOffsets();
+                                    SDK::FMargin nameOffsets = nameSlot->GetOffsets();
+
+                                    if (fAspectRatio > fNativeAspect) {
+                                        float widthOffset = ((1080.00f * fAspectRatio) - 1920.00f) / 2.00f;
+                                        if (dmgOffsets.Left != widthOffset) {
+                                            dmgOffsets.Left = widthOffset;
+                                            dmgSlot->SetOffsets(dmgOffsets);
+                                        }
+                                        if (nameOffsets.Left != widthOffset) {
+                                            nameOffsets.Left = widthOffset;
+                                            nameSlot->SetOffsets(nameOffsets);
+                                        }
+                                    }
+                                    else if (fAspectRatio < fNativeAspect) {
+                                        float heightOffset = ((1920.00f / fAspectRatio) - 1080.00f) / 2.00f;
+                                        if (dmgOffsets.Top != heightOffset) {
+                                            dmgOffsets.Top = heightOffset;
+                                            dmgSlot->SetOffsets(dmgOffsets);
+                                        }
+                                        if (nameOffsets.Top != heightOffset) {
+                                            nameOffsets.Top = heightOffset;
+                                            nameSlot->SetOffsets(nameOffsets);
+                                        }
+                                    }
+
+                                    return;
+                                }
                             }
                                                       
 

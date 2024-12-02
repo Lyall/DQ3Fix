@@ -326,13 +326,14 @@ void HUD()
                     [](SafetyHookContext& ctx) {
                         if (ctx.xmm0.f32[0] == 0.00f && ctx.xmm0.f32[1] == 0.00f && ctx.xmm0.f32[2] == 1.00f && ctx.xmm0.f32[3] == 1.00f) {
                             SDK::UObject* obj = (SDK::UObject*)ctx.rcx; 
+
                             // Don't centre these HUD elements as they are already centred.
                             if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WB_Title2_Root_C") || obj->GetName().contains("WBP_Common_Fading_C"))
                                 return;
 
                             // Span HUD
                             if (bSpanHUD) {
-                                if (obj->GetName().contains("WB_BattleUnit_Root_C") || obj->GetName().contains("WB_Field_Top_Root_C") || obj->GetName().contains("WB_MiniMapMenu_Root_C") || obj->GetName().contains("WB_TownName_Root_C") || obj->GetName().contains("WB_FacilityShop_Root_C"))
+                                if (obj->GetName().contains("WB_BattleUnit_Root_C")|| obj->GetName().contains("WB_BattleTop_Root_C") || obj->GetName().contains("WB_Field_Top_Root_C") || obj->GetName().contains("WB_MiniMapMenu_Root_C") || obj->GetName().contains("WB_TownName_Root_C") || obj->GetName().contains("WB_FacilityShop_Root_C"))
                                     return;
 
                                 if (obj->GetName().contains("WB_BattlePlayerStatus_Root_C")) {
@@ -343,7 +344,7 @@ void HUD()
                                     SDK::FMargin dmgOffsets = dmgSlot->GetOffsets();
                                     SDK::FMargin nameOffsets = nameSlot->GetOffsets();
 
-                                    if (fAspectRatio > fNativeAspect) {
+                                    if (fAspectRatio > fNativeAspect) {   
                                         float widthOffset = ((1080.00f * fAspectRatio) - 1920.00f) / 2.00f;
                                         if (dmgOffsets.Left != widthOffset) {
                                             dmgOffsets.Left = widthOffset;
@@ -370,7 +371,6 @@ void HUD()
                                 }
                             }
                                                       
-
                             if (fAspectRatio > fNativeAspect) {
                                 ctx.xmm0.f32[0] = fHUDWidthOffset / (float)iCurrentResX;
                                 ctx.xmm0.f32[2] = 1.00f - ctx.xmm0.f32[0];
@@ -431,7 +431,7 @@ void* __fastcall FindFileInPakFiles_hk(void* pakFile, void* fileName, void* file
             spdlog::info("FindFileInPakFiles: Loaded loose file: {}", Util::wstring_to_string(szFileName));
 
         return 0;
-    }       
+    }
 
     return FindFileInPakFiles_sh.fastcall<void*>(pakFile, fileName, fileEntry);
 }
@@ -513,6 +513,9 @@ void Miscellaneous()
             spdlog::error("IsNonPakFilenameAllowed: Pattern scan failed.");
         }
     }
+
+    // BattleCharaOpacity::SetOpacity()
+    // 31 ?? F3 0F ?? ?? ?? ?? 48 85 ?? 0F 95 ?? 48 ?? ?? 48 89 ?? ?? 48 89 ?? F3 0F ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ??
 }
 
 void EnableConsole()

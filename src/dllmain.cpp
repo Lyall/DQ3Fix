@@ -415,6 +415,25 @@ void HUD()
     }
 }
 
+const wchar_t* gameDataPath = L"../../../";
+
+SafetyHookInline FindFileInPakFiles_sh{};
+void* __fastcall FindFileInPakFiles_hk(void* pakFile, void* fileName, void* fileEntry)
+{
+    const TCHAR* szFileName = *(TCHAR**)fileName;
+
+    if (fileName && wcsstr((const TCHAR*)szFileName, gameDataPath) && Util::FileExists(szFileName))
+        return 0;
+
+    return FindFileInPakFiles_sh.fastcall<void*>(pakFile, fileName, fileEntry);
+}
+
+SafetyHookInline IsNonPakFilenameAllowed_sh{};
+__int64 __fastcall IsNonPakFilenameAllowed_hk(void* thisPtr, void* fileName)
+{
+    return 1;
+}
+
 void Miscellaneous()
 {
     if (bApplyCVars) {
@@ -459,6 +478,30 @@ void Miscellaneous()
         else {
             spdlog::error("Max FPS: Pattern scan failed.");
         }
+    }
+
+    // FPakPlatformFile::FindFileInPakFiles()
+    std::uint8_t* FindFileInPakFilesScanResult = Memory::PatternScan(exeModule, "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 41 ?? 41 ?? 48 83 ?? ?? 80 ?? ?? ?? ?? ?? 00 4D 8B ?? 48 8B ?? 48 8B ??");
+    if (FindFileInPakFilesScanResult) {
+        spdlog::info("FindFileInPakFiles: Address is {:s}+{:x}", sExeName.c_str(), FindFileInPakFilesScanResult - (std::uint8_t*)exeModule);
+        FindFileInPakFiles_sh = safetyhook::create_inline(FindFileInPakFilesScanResult, reinterpret_cast<void*>(FindFileInPakFiles_hk));
+        if (FindFileInPakFiles_sh)
+            spdlog::info("FindFileInPakFiles: Hooked function successfully.");
+    }
+    else {
+        spdlog::error("FindFileInPakFiles: Pattern scan failed.");
+    }
+
+    // FPakPlatformFile::IsNonPakFilenameAllowed()
+    std::uint8_t* IsNonPakFilenameAllowedScanResult = Memory::PatternScan(exeModule, "48 89 ?? ?? ?? 48 89 ?? ?? ?? 56 57 41 ?? 48 83 ?? ?? 48 8B ?? 45 33 ?? 48 8D ?? ?? ?? 4C ?? ?? E8 ?? ?? ?? ?? 48 8D ?? ?? ?? ?? ?? 83 ?? ?? 00 74 ??");
+    if (IsNonPakFilenameAllowedScanResult) {
+        spdlog::info("IsNonPakFilenameAllowed: Address is {:s}+{:x}", sExeName.c_str(), IsNonPakFilenameAllowedScanResult - (std::uint8_t*)exeModule);
+        IsNonPakFilenameAllowed_sh = safetyhook::create_inline(IsNonPakFilenameAllowedScanResult, reinterpret_cast<void*>(IsNonPakFilenameAllowed_hk));
+        if (IsNonPakFilenameAllowed_sh)
+            spdlog::info("IsNonPakFilenameAllowed: Hooked function successfully.");
+    }
+    else {
+        spdlog::error("IsNonPakFilenameAllowed: Pattern scan failed.");
     }
 }
 

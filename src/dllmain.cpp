@@ -422,7 +422,7 @@ void* __fastcall FindFileInPakFiles_hk(void* pakFile, void* fileName, void* file
 {
     const TCHAR* szFileName = *(TCHAR**)fileName;
 
-    if (fileName && wcsstr((const TCHAR*)szFileName, gameDataPath) && Util::FileExists(szFileName))
+    if (fileName && wcsstr((const TCHAR*)szFileName, gameDataPath) && Util::file_exists(szFileName))
         return 0;
 
     return FindFileInPakFiles_sh.fastcall<void*>(pakFile, fileName, fileEntry);

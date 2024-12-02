@@ -129,4 +129,10 @@ namespace Util
                 return std::tolower(a) == std::tolower(b);
             });
     }
+
+    bool file_exists(const WCHAR* fileName)
+    {
+        DWORD dwAttrib = GetFileAttributesW(fileName);
+        return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+    }
 }

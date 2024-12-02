@@ -10,6 +10,7 @@ This is an ASI plugin for Dragon Quest III HD-2D Remake that adds ultrawide/narr
 - Disable 60FPS cap.
 - Enable developer console.
 - Apply a list of console commands on level load.
+- Load loose files for modding.
 
 ### Ultrawide/narrower
 - Support for any aspect ratio.

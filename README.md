@@ -14,7 +14,7 @@ This is an ASI plugin for Dragon Quest III HD-2D Remake that adds ultrawide/narr
 
 ### Ultrawide/narrower
 - Support for any aspect ratio.
-- Centred 16:9 HUD with option to span some elements..
+- Centred 16:9 HUD with option to span some elements.
 - Correct FOV at any aspect ratio.
 
 ## Installation

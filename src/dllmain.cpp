@@ -3,6 +3,7 @@
 
 #include "SDK/Engine_classes.hpp"
 #include "SDK/UMG_classes.hpp"
+#include "SDK/WB_Map2_Root_classes.hpp"
 #include "SDK/WB_BattlePlayerStatus_Root_classes.hpp"
 #include "SDK/WB_Battle_MonsterDamage2_classes.hpp"
 #include "SDK/WB_BattleMonsterName_classes.hpp"
@@ -325,11 +326,36 @@ void HUD()
                 HUDSizeMidHook = safetyhook::create_mid(HUDSizeFunction + 0x7,
                     [](SafetyHookContext& ctx) {
                         if (ctx.xmm0.f32[0] == 0.00f && ctx.xmm0.f32[1] == 0.00f && ctx.xmm0.f32[2] == 1.00f && ctx.xmm0.f32[3] == 1.00f) {
-                            SDK::UObject* obj = (SDK::UObject*)ctx.rcx; 
+                            SDK::UObject* obj = (SDK::UObject*)ctx.rcx;
 
                             // Don't centre these HUD elements as they are already centred.
                             if (obj->GetName().contains("WB_TitleDemo_Root_C") || obj->GetName().contains("WB_Title2_Root_C") || obj->GetName().contains("WBP_Common_Fading_C"))
                                 return;
+
+                            float widthOffset = ((1080.00f * fAspectRatio) - 1920.00f) / 2.00f;
+                            float heightOffset = ((1920.00f / fAspectRatio) - 1080.00f) / 2.00f;
+
+                            // Span map background
+                            if (obj->GetName().contains("WB_Map2_Root_C")) {
+                                SDK::UWB_Map2_Root_C* map = (SDK::UWB_Map2_Root_C*)obj;
+                                SDK::UCanvasPanelSlot* bgSlot = (SDK::UCanvasPanelSlot*)map->BG2->Slot->Parent->Slot;
+                                auto bgOffsets = bgSlot->GetOffsets();
+
+                                if (fAspectRatio > fNativeAspect) {
+                                    if (bgOffsets.Left != widthOffset) {
+                                        bgOffsets.Left = widthOffset;
+                                        bgSlot->SetOffsets(bgOffsets);
+                                    }
+                                }
+                                else if (fAspectRatio < fNativeAspect) {
+                                    if (bgOffsets.Top != heightOffset) {
+                                        bgOffsets.Top = heightOffset;
+                                        bgSlot->SetOffsets(bgOffsets);
+                                    }
+                                }
+                                
+                                return;
+                            }
 
                             // Span HUD
                             if (bSpanHUD) {
@@ -345,7 +371,6 @@ void HUD()
                                     SDK::FMargin nameOffsets = nameSlot->GetOffsets();
 
                                     if (fAspectRatio > fNativeAspect) {   
-                                        float widthOffset = ((1080.00f * fAspectRatio) - 1920.00f) / 2.00f;
                                         if (dmgOffsets.Left != widthOffset) {
                                             dmgOffsets.Left = widthOffset;
                                             dmgSlot->SetOffsets(dmgOffsets);
@@ -355,8 +380,7 @@ void HUD()
                                             nameSlot->SetOffsets(nameOffsets);
                                         }
                                     }
-                                    else if (fAspectRatio < fNativeAspect) {
-                                        float heightOffset = ((1920.00f / fAspectRatio) - 1080.00f) / 2.00f;
+                                    else if (fAspectRatio < fNativeAspect) {                             
                                         if (dmgOffsets.Top != heightOffset) {
                                             dmgOffsets.Top = heightOffset;
                                             dmgSlot->SetOffsets(dmgOffsets);

@@ -3,10 +3,14 @@
 
 #include "SDK/Engine_classes.hpp"
 #include "SDK/UMG_classes.hpp"
+
 #include "SDK/WB_Map2_Root_classes.hpp"
 #include "SDK/WB_BattlePlayerStatus_Root_classes.hpp"
 #include "SDK/WB_Battle_MonsterDamage2_classes.hpp"
 #include "SDK/WB_BattleMonsterName_classes.hpp"
+#include "SDK/WB_MBREncount_Root_classes.hpp"
+#include "SDK/WB_MBREncount_Encount_WindowItem_classes.hpp"
+#include "SDK/WB_MBREncount_Encount_Window_classes.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -354,6 +358,30 @@ void HUD()
                                     }
                                 }
                                 
+                                return;
+                            }
+
+                            // Monster battle arena
+                            if (obj->GetName().contains("WB_MBREncount_Root_C")) {
+                                SDK::UWB_MBREncount_Root_C* mbrEncount = (SDK::UWB_MBREncount_Root_C*)obj;
+                                SDK::UCanvasPanelSlot* encountSlot = (SDK::UCanvasPanelSlot*)mbrEncount->Encount->Slot;
+                                SDK::UCanvasPanelSlot* renderSlot = (SDK::UCanvasPanelSlot*)mbrEncount->Render->Slot;
+
+                                SDK::FMargin renderOffsets = renderSlot->GetOffsets();
+
+                                if (fAspectRatio > fNativeAspect) {
+                                    if (renderOffsets.Left != 1080.00f * fAspectRatio) {
+                                        renderSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1080.00f * fAspectRatio, 1080.00f));
+                                        mbrEncount->Encount->SetRenderScale((SDK::FVector2D(1.00f * fAspectMultiplier, 1.00f)));
+                                    }
+                                }
+                                else if (fAspectRatio < fNativeAspect) {
+                                    if (renderOffsets.Top != 1920.00f / fAspectRatio) {
+                                        renderSlot->SetOffsets(SDK::FMargin(0.00f, 0.00f, 1920.00f, 1920.00f / fAspectRatio));
+                                        mbrEncount->Encount->SetRenderScale((SDK::FVector2D(1.00f, 1.00f / fAspectMultiplier)));
+                                    }
+                                }
+                     
                                 return;
                             }
 
